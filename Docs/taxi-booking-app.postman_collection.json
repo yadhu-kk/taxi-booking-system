@@ -1,0 +1,297 @@
+{
+	"info": {
+		"_postman_id": "cbf64a06-fced-4228-a4f9-89ef87010bec",
+		"name": "taxi-booking-app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21897253"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"email\":\"akhil@gmail.com\",\r\n   \"password\":\"abcde\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SignUp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"akhil\",\r\n   \"email\":\"akhil@gmail.com\",\r\n   \"password\":\"abcde\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BookTaxi",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJha2hpbEBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzgyNjEsImV4cCI6MTcwOTE0MTg2MX0.Z8fjc-KaA6RU3RV26KN7R0Gt9e0qXZirO39VT6NeiKo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"pickupLocation\":\"calicut\",\r\n\"dropoffLocation\":\"calicut1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/booking/3/1?distance=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"booking",
+						"3",
+						"1"
+					],
+					"query": [
+						{
+							"key": "taxiId",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "distance",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateBalance",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJha2hpbEBnbWFpbC5jb20iLCJpYXQiOjE3MDkxMzgyNjEsImV4cCI6MTcwOTE0MTg2MX0.Z8fjc-KaA6RU3RV26KN7R0Gt9e0qXZirO39VT6NeiKo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountBalance\":1000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/user/update/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user",
+						"update",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddTaxi",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2YXJ1bkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxNzY0MDEsImV4cCI6MTcwOTE4MDAwMX0.SSE1bp4gtY9JksC5cJ5izpingoAsfcmuAuOkoOLD7BA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"driverName\":\"yadhu\",\r\n\"licenceNumber\":\"22555\",\r\n\"currentLocation\":\"vadakara\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/taxi",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"taxi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ViewBooking",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2YXJ1bkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxNzY0MDEsImV4cCI6MTcwOTE4MDAwMX0.SSE1bp4gtY9JksC5cJ5izpingoAsfcmuAuOkoOLD7BA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/booking/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"booking",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel-Booking",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2YXJ1bkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxNzY0MDEsImV4cCI6MTcwOTE4MDAwMX0.SSE1bp4gtY9JksC5cJ5izpingoAsfcmuAuOkoOLD7BA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/booking/cancel/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"booking",
+						"cancel",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SearchTaxi",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2YXJ1bkBnbWFpbC5jb20iLCJpYXQiOjE3MDkxNzY0MDEsImV4cCI6MTcwOTE4MDAwMX0.SSE1bp4gtY9JksC5cJ5izpingoAsfcmuAuOkoOLD7BA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/booking/searchTaxi?pickupLocation=calicut",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"booking",
+						"searchTaxi"
+					],
+					"query": [
+						{
+							"key": "pickupLocation",
+							"value": "calicut"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

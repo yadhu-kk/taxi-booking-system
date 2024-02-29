@@ -1,0 +1,16 @@
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taxibookingapp
+    username: postgres
+    password: asd123.
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+jwt:
+    expiry: 3600000
+    secret: "bc71cf560e4b8d958a444aac8b5130777032f1cfd25872006cb195c67bcd3fed"
