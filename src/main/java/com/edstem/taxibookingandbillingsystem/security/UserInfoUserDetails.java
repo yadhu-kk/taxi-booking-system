@@ -1,10 +1,9 @@
 package com.edstem.taxibookingandbillingsystem.security;
 
 import com.edstem.taxibookingandbillingsystem.model.User;
+import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
 
 public class UserInfoUserDetails implements UserDetails {
     private final String email;
@@ -13,7 +12,6 @@ public class UserInfoUserDetails implements UserDetails {
     public UserInfoUserDetails(User user) {
         email = user.getEmail();
         password = user.getPassword();
-
     }
 
     @Override

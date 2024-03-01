@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<UpdateAccountResponse> updateBalance(@PathVariable Long id, @RequestBody UpdateAccountRequest request) {
+    public ResponseEntity<UpdateAccountResponse> updateBalance(
+            @PathVariable Long id, @RequestBody UpdateAccountRequest request) {
         return ResponseEntity.ok(userService.updateAccountBalance(id, request));
     }
-
 }

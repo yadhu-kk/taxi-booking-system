@@ -7,15 +7,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtService {
@@ -25,7 +24,6 @@ public class JwtService {
 
     @Value("${jwt.expiry}")
     private Integer EXPIRY;
-
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -41,8 +39,7 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())
                 .build()
                 .parseClaimsJws(token)
@@ -58,23 +55,21 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-
     public LoginResponse generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, user.getEmail());
     }
 
     private LoginResponse createToken(Map<String, Object> claims, String userName) {
-        String generatedToken = Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userName)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRY))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
-        return LoginResponse.builder()
-                .name(userName)
-                .token(generatedToken)
-                .build();
+        String generatedToken =
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setSubject(userName)
+                        .setIssuedAt(new Date(System.currentTimeMillis()))
+                        .setExpiration(new Date(System.currentTimeMillis() + EXPIRY))
+                        .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                        .compact();
+        return LoginResponse.builder().name(userName).token(generatedToken).build();
     }
 
     private Key getSignKey() {

@@ -11,9 +11,10 @@ import lombok.NoArgsConstructor;
 public class TaxiRequest {
     @NotBlank(message = "please enter drivername")
     private String driverName;
+
     @NotBlank(message = "please enter LicenceNumber")
     private String licenceNumber;
+
     @NotBlank(message = "please enter currentLocation")
     private String currentLocation;
-
 }

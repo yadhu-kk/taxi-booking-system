@@ -7,6 +7,8 @@ import com.edstem.taxibookingandbillingsystem.contract.response.LoginResponse;
 import com.edstem.taxibookingandbillingsystem.contract.response.SignupResponse;
 import com.edstem.taxibookingandbillingsystem.contract.response.UpdateAccountResponse;
 import com.edstem.taxibookingandbillingsystem.exception.EntityAlreadyExistsException;
+import com.edstem.taxibookingandbillingsystem.exception.InsufficientFundException;
+import com.edstem.taxibookingandbillingsystem.exception.InvalidLoginException;
 import com.edstem.taxibookingandbillingsystem.model.User;
 import com.edstem.taxibookingandbillingsystem.repository.UserRepository;
 import com.edstem.taxibookingandbillingsystem.security.JwtService;
@@ -44,19 +46,44 @@ public class UserServiceTest {
     }
 
     @Test
-    void testSignupUser() {
-        RegisterRequest request = new RegisterRequest("yadhu", "yadhu@gmail.com", "password1");
-        User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .build();
-        SignupResponse expectedResponse = new SignupResponse(1L, "yadhu", "yadhu@gmail.com");
-        when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(modelMapper.map(user, SignupResponse.class)).thenReturn(expectedResponse);
+    void testSignup() {
+        RegisterRequest request = new RegisterRequest("yadhu", "yadhu@gmail.com", "password");
+        User user = modelMapper.map(request, User.class);
+        SignupResponse expectedResponse = modelMapper.map(user, SignupResponse.class);
 
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
+        assertThrows(EntityAlreadyExistsException.class, () -> userService.signUpUser(request));
+
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        when(passwordEncoder.encode("password")).thenReturn("password");
+
+        when(userRepository.save(any())).thenReturn(user);
+
+        SignupResponse actualResponse = userService.signUpUser(request);
+
+        assertEquals(expectedResponse, actualResponse);
     }
+
+    @Test
+    void signUp_EntityAlready_ExistsException() {
+
+        RegisterRequest request = new RegisterRequest("yadhu", "yadhu@gmail.com", "password123");
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
+        EntityAlreadyExistsException exception = assertThrows(EntityAlreadyExistsException.class, () -> userService.signUpUser(request));
+        assertEquals("User already exist", exception.getMessage());
+        verify(userRepository, times(1)).existsByEmail(request.getEmail());
+        verify(passwordEncoder, never()).encode(any());
+        verify(userRepository, never()).save(any());
+        verify(modelMapper, never()).map(any(User.class), eq(SignupResponse.class));
+    }
+
+    @Test
+    void test_Invalid_Login_Exception() {
+        String expectedMessage = "Invalid login";
+        InvalidLoginException exception = new InvalidLoginException();
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
 
     @Test
     public void login_withValidCredentials_shouldReturnAuthToken() throws Exception {
@@ -69,7 +96,8 @@ public class UserServiceTest {
         savedUser.setPassword("hashedPassword");
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
         when(userRepository.findByEmail(request.getEmail())).thenReturn(savedUser);
-        when(passwordEncoder.matches(request.getPassword(), savedUser.getPassword())).thenReturn(true);
+        when(passwordEncoder.matches(request.getPassword(), savedUser.getPassword()))
+                .thenReturn(true);
         LoginResponse expectedToken = new LoginResponse();
         expectedToken.setName("yadhu");
         expectedToken.setToken("validToken");
@@ -116,10 +144,18 @@ public class UserServiceTest {
         when(userRepository.findById(Mockito.<Long>any())).thenReturn(ofResult);
         when(modelMapper.map(Mockito.<Object>any(), Mockito.<Class<UpdateAccountResponse>>any()))
                 .thenThrow(new EntityAlreadyExistsException("Entity"));
-        assertThrows(EntityAlreadyExistsException.class,
+        assertThrows(
+                EntityAlreadyExistsException.class,
                 () -> userService.updateAccountBalance(1L, new UpdateAccountRequest(10.0d)));
         verify(modelMapper).map(Mockito.<Object>any(), Mockito.<Class<UpdateAccountResponse>>any());
         verify(userRepository).findById(Mockito.<Long>any());
         verify(userRepository).save(Mockito.<User>any());
+    }
+
+    @Test
+    void testInsufficientFund_ExceptionMessage() {
+        String expectedMessage = "Insufficient balance";
+        InsufficientFundException exception = new InsufficientFundException();
+        assertEquals(expectedMessage, exception.getMessage());
     }
 }

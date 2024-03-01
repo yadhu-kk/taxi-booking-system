@@ -1,5 +1,12 @@
 package com.edstem.taxibookingandbillingsystem.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.edstem.taxibookingandbillingsystem.contract.request.LoginRequest;
 import com.edstem.taxibookingandbillingsystem.contract.request.RegisterRequest;
 import com.edstem.taxibookingandbillingsystem.contract.request.UpdateAccountRequest;
@@ -17,25 +24,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
-    private UserService userService;
+    @Autowired private MockMvc mockMvc;
+    @MockBean private UserService userService;
 
     @Test
     void testSignUp() throws Exception {
-        RegisterRequest signupRequest =
-                new RegisterRequest("yadhu", "yadhu@gmail.com", "password");
+        RegisterRequest signupRequest = new RegisterRequest("yadhu", "yadhu@gmail.com", "password");
         SignupResponse expectedResponse = new SignupResponse(1L, "yadhu", "yadhu@gmail.com");
         when(userService.signUpUser(any(RegisterRequest.class))).thenReturn(expectedResponse);
         mockMvc.perform(
@@ -43,15 +40,17 @@ public class UserControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(signupRequest)))
                 .andExpect(status().isOk())
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
-                        .json(new ObjectMapper().writeValueAsString(expectedResponse)));
+                .andExpect(
+                        org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                                .json(new ObjectMapper().writeValueAsString(expectedResponse)));
     }
 
     @Test
     void testLogin() throws Exception {
         LoginRequest loginRequest = new LoginRequest("yadhu@gmail.com", "password");
         LoginResponse expectedResponse =
-                new LoginResponse("name",
+                new LoginResponse(
+                        "name",
                         "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhcnVuQGdtYWlsLmNvbSIsImlhdCI6MTcwOTA5MDUxNCwiZXhwIjoxNzA5MDk0MTE0fQ.bXQILov9A_5HYr87FJqW3ciKG7mBSA2Q2ORnQCAx2Pc");
         when(userService.loginUser(any(LoginRequest.class))).thenReturn(expectedResponse);
 

@@ -12,5 +12,4 @@ public class TaxiResponse {
     private String driverName;
     private String licenceNumber;
     private String currentLocation;
-
 }

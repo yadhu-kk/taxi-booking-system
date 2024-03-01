@@ -1,17 +1,19 @@
 package com.edstem.taxibookingandbillingsystem.service;
 
 import com.edstem.taxibookingandbillingsystem.contract.request.TaxiRequest;
+import com.edstem.taxibookingandbillingsystem.contract.response.TaxiResponse;
+import com.edstem.taxibookingandbillingsystem.exception.EntityAlreadyExistsException;
+import com.edstem.taxibookingandbillingsystem.model.Taxi;
 import com.edstem.taxibookingandbillingsystem.repository.TaxiRepository;
-import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class TaxiServiceTest {
@@ -27,13 +29,22 @@ public class TaxiServiceTest {
         taxiService = new TaxiService(taxiRepository, modelMapper);
     }
 
-
     @Test
-    void testAddTaxi() {
-        when(taxiRepository.existsByLicenceNumber(Mockito.<String>any())).thenReturn(true);
-        assertThrows(EntityExistsException.class,
-                () -> taxiService.addTaxi(new TaxiRequest("akhil", "4228", "kochi")));
-        verify(taxiRepository).existsByLicenceNumber(eq("4228"));
-    }
+    void testAddTaxi1() {
+        TaxiRequest request = new TaxiRequest("yadhu", "5555", "Kakkanad");
+        Taxi taxi = modelMapper.map(request, Taxi.class);
+        TaxiResponse expectedResponse = modelMapper.map(taxi, TaxiResponse.class);
 
+        when(taxiRepository.existsByLicenceNumber(request.getLicenceNumber())).thenReturn(true);
+        assertThrows(EntityAlreadyExistsException.class, () -> taxiService.addTaxi(request));
+
+        when(taxiRepository.existsByLicenceNumber(request.getLicenceNumber())).thenReturn(false);
+        when(taxiRepository.save(any())).thenReturn(taxi);
+
+        TaxiResponse actualResponse = taxiService.addTaxi(request);
+
+        assertEquals(expectedResponse.getDriverName(), actualResponse.getDriverName());
+        assertEquals(expectedResponse.getLicenceNumber(), actualResponse.getLicenceNumber());
+        assertEquals(expectedResponse.getCurrentLocation(), actualResponse.getCurrentLocation());
+    }
 }

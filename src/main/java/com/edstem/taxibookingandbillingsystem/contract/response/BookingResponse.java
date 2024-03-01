@@ -19,5 +19,4 @@ public class BookingResponse {
     private double fare;
     private String bookingTime;
     private Status status;
-
 }

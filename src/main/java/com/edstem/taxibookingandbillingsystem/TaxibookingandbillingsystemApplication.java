@@ -21,5 +21,4 @@ public class TaxibookingandbillingsystemApplication {
                 .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
         return mapper;
     }
-
 }
