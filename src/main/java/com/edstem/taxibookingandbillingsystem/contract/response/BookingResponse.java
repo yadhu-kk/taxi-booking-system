@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class BookingResponse {
     private Long id;
     private Long userId;

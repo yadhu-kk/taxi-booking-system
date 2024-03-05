@@ -43,7 +43,7 @@ public class UserService {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
         if (!userRepository.existsByEmail(email)) {
-            throw new EntityNotFoundException("Invalid login");
+            throw new InvalidLoginException();
         }
         User user = userRepository.findByEmail(loginRequest.getEmail());
         if (passwordEncoder.matches(password, user.getPassword())) {
@@ -62,6 +62,6 @@ public class UserService {
                 .accountBalance(user.getAccountBalance() + request.getAccountBalance())
                 .build();
         User updateUser = userRepository.save(user);
-        return modelMapper.map(user, UpdateAccountResponse.class);
+        return modelMapper.map(updateUser, UpdateAccountResponse.class);
     }
 }

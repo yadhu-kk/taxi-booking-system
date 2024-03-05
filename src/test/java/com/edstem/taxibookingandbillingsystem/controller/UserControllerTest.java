@@ -27,8 +27,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 public class UserControllerTest {
-    @Autowired private MockMvc mockMvc;
-    @MockBean private UserService userService;
+    @Autowired
+    private MockMvc mockMvc;
+    @MockBean
+    private UserService userService;
 
     @Test
     void testSignUp() throws Exception {

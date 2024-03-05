@@ -1,10 +1,5 @@
 package com.edstem.taxibookingandbillingsystem.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
-
 import com.edstem.taxibookingandbillingsystem.constant.Status;
 import com.edstem.taxibookingandbillingsystem.contract.request.BookingRequest;
 import com.edstem.taxibookingandbillingsystem.contract.response.BookingResponse;
@@ -17,12 +12,6 @@ import com.edstem.taxibookingandbillingsystem.repository.BookingRepository;
 import com.edstem.taxibookingandbillingsystem.repository.TaxiRepository;
 import com.edstem.taxibookingandbillingsystem.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -31,36 +20,33 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
 public class BookingServiceTest {
-    @Mock private BookingRepository bookingRepository;
-    @Mock private ModelMapper modelMapper;
-    @InjectMocks private BookingService bookingService;
-    @Mock private TaxiRepository taxiRepository;
-    @Mock private UserRepository userRepository;
+    @Mock
+    private BookingRepository bookingRepository;
+    @Mock
+    private ModelMapper modelMapper;
+    @InjectMocks
+    private BookingService bookingService;
+    @Mock
+    private TaxiRepository taxiRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
-
-//    @Test
-//    void testBookTaxi() {
-//        User user = new User();
-//        user.setAccountBalance(10.0d);
-//        user.setEmail("yadhu@gmail.com");
-//        user.setId(1L);
-//        user.setName("yadhu");
-//        user.setPassword("password");
-//        Optional<User> ofResult = Optional.of(user);
-//        when(userRepository.findById(Mockito.<Long>any())).thenReturn(ofResult);
-//        when(taxiRepository.findById(Mockito.<Long>any()))
-//                .thenThrow(new InsufficientFundException());
-//        assertThrows(
-//                InsufficientFundException.class,
-//                () -> bookingService.bookTaxi(new BookingRequest("kochi", "kannur"), 1L, 1L, 1L));
-//        verify(taxiRepository).findById(Mockito.<Long>any());
-//        verify(userRepository).findById(Mockito.<Long>any());
-//    }
 
     @Test
     void testBookTaxi() {
@@ -73,7 +59,7 @@ public class BookingServiceTest {
                         .build();
 
         BookingRequest request = new BookingRequest("Kakkanad", "Aluva");
-        Long userId=1L;
+        Long userId = 1L;
         Long taxiId = 1L;
         Long distance = 8L;
         Double expense = distance * 10D;
@@ -103,8 +89,28 @@ public class BookingServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(userRepository.save(any())).thenReturn(updatedUser);
 
-        BookingResponse actualResponse = bookingService.bookTaxi(request, userId,taxiId,distance);
+        BookingResponse actualResponse = bookingService.bookTaxi(request, userId, taxiId, distance);
         assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    void testBookTaxiEntityNotFound() {
+        BookingRequest request = new BookingRequest("pickupLocation", "dropoffLocation");
+        Long userId = 1L;
+        Long taxiId = 2L;
+        Long distance = 10L;
+
+        when(userRepository.findById(Mockito.eq(userId))).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> {
+            bookingService.bookTaxi(request, userId, taxiId, distance);
+        });
+        verify(userRepository, times(1)).findById(Mockito.eq(userId));
+        when(userRepository.findById(Mockito.eq(userId))).thenReturn(Optional.of(new User()));
+        when(taxiRepository.findById(Mockito.eq(taxiId))).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> {
+            bookingService.bookTaxi(request, userId, taxiId, distance);
+        });
+        verify(taxiRepository, times(1)).findById(Mockito.eq(taxiId));
     }
 
     @Test
@@ -121,10 +127,11 @@ public class BookingServiceTest {
         Long taxiId = 1L;
         Long userId = 2L;
         Long distance = 80L;
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(taxiRepository.findById(taxiId)).thenReturn(Optional.of(taxi));
 
         assertThrows(
-                EntityNotFoundException.class,
+                InsufficientFundException.class,
                 () -> {
                     bookingService.bookTaxi(request, userId, taxiId, distance);
                 });
@@ -165,6 +172,17 @@ public class BookingServiceTest {
     }
 
     @Test
+    void testGetBookingNotFound() {
+        Long bookingId = 1L;
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            bookingService.viewBookingDetails(bookingId);
+        });
+        assertEquals("BookingNotFound" + bookingId, exception.getMessage());
+        verify(bookingRepository, times(1)).findById(bookingId);
+    }
+
+    @Test
     void testCancelBooking() {
         Long bookingId = 1L;
         Long userId = 1L;
@@ -187,6 +205,17 @@ public class BookingServiceTest {
         String actualResponse = bookingService.cancelBooking(bookingId);
 
         assertEquals("booking cancelled successfully" + bookingId, actualResponse);
+    }
+
+    @Test
+    void testCancelBookingBookingNotFound() {
+        Long bookingId = 1L;
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            bookingService.cancelBooking(bookingId);
+        });
+        assertEquals("Booking Not found" + bookingId, exception.getMessage());
+        verify(bookingRepository, times(1)).findById(bookingId);
     }
 
     @Test
