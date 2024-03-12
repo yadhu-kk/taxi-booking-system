@@ -33,23 +33,23 @@ class UserInfoUserDetailsServiceTest {
     void testLoadUserByUsername() throws UsernameNotFoundException {
         User user = new User();
         user.setAccountBalance(10.0d);
-        user.setEmail("jane.doe@example.org");
+        user.setEmail("yadhu@gmail.com");
         user.setId(1L);
         user.setName("Name");
-        user.setPassword("iloveyou");
+        user.setPassword("hello");
         when(userRepository.findByEmail(Mockito.<String>any())).thenReturn(user);
-        UserDetails actualLoadUserByUsernameResult = userInfoUserDetailsService.loadUserByUsername("jane.doe@example.org");
+        UserDetails actualLoadUserByUsernameResult = userInfoUserDetailsService.loadUserByUsername("yadhu@gmail.com");
 
-        verify(userRepository).findByEmail(eq("jane.doe@example.org"));
-        assertEquals("iloveyou", actualLoadUserByUsernameResult.getPassword());
-        assertEquals("jane.doe@example.org", actualLoadUserByUsernameResult.getUsername());
+        verify(userRepository).findByEmail(eq("yadhu@gmail.com"));
+        assertEquals("hello", actualLoadUserByUsernameResult.getPassword());
+        assertEquals("yadhu@gmail.com", actualLoadUserByUsernameResult.getUsername());
     }
 
     @Test
     void testLoadUserByUsername2() throws UsernameNotFoundException {
         when(userRepository.findByEmail(Mockito.<String>any())).thenThrow(new UsernameNotFoundException("User not found"));
         assertThrows(UsernameNotFoundException.class,
-                () -> userInfoUserDetailsService.loadUserByUsername("jane.doe@example.org"));
-        verify(userRepository).findByEmail(eq("jane.doe@example.org"));
+                () -> userInfoUserDetailsService.loadUserByUsername("yadhu@gmail.com"));
+        verify(userRepository).findByEmail(eq("yadhu@gmail.com"));
     }
 }
